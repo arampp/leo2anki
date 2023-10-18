@@ -19,23 +19,23 @@
 const fromLang = 'en';
 const toLang = 'de';
 
-function extractVocabulary() {
+function extractVocabulary(): string[][]  {
   const output = [];
   const matches = document.body.querySelectorAll('.tb-bg-alt-lightgray > tbody > tr');
 
   for (let index = 0; index < matches.length; index++) {
     const item = matches[index];
     output.push([
-      item.querySelector(`td[lang=${fromLang}]`).innerHTML,
-      item.querySelector(`td[lang=${toLang}]`).innerHTML,
+      item.querySelector(`td[lang=${fromLang}]`)?.innerHTML ?? '',
+      item.querySelector(`td[lang=${toLang}]`)?.innerHTML ?? '',
     ]);
   }
 
   return output;
 }
 
-function downloadTsvFile(filename, content) {
-  const tsv = content.reduce((acc, cur) => acc + cur.join('\t') + '\n', '');
+function downloadTsvFile(filename: string, content: string[][]) {
+  const tsv = content.reduce((acc: string, cur: string[]) => acc + cur.join('\t') + '\n', '');
 
   const a = document.createElement('a');
   a.setAttribute('href', 'data:text/tab-separated-values;charset=utf-8,' + encodeURIComponent(tsv));
@@ -44,10 +44,11 @@ function downloadTsvFile(filename, content) {
   a.click();
 }
 
+
 const manageFolderUrl = 'https://dict.leo.org/trainer/manageFolder.php' +
     `?lp=${fromLang}${toLang}&lang=${toLang}`;
-if (location != manageFolderUrl) {
-  location = manageFolderUrl;
+if (location.href != manageFolderUrl) {
+  location.href = manageFolderUrl;
 } else {
   downloadTsvFile('vokabeln.csv', extractVocabulary());
 }
